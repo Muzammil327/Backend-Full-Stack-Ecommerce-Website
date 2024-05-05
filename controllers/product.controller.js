@@ -1,11 +1,11 @@
 import slugify from "slugify";
-import product from "../models/product.model.js";
+import products from "../models/product.model.js";
 import expressAsyncHandler from "express-async-handler";
 import mongoose from "mongoose";
 
 export const GET_ALL_PRODUCT = expressAsyncHandler(async (req, res) => {
   try {
-    const getproduct = await product.find();
+    const getproduct = await products.find();
     return res.status(200).send(getproduct);
   } catch (error) {
     console.log(error);
@@ -24,7 +24,7 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
   const lowPrice = parseInt(req.query.lowPrice);
   const highPrice = parseInt(req.query.highPrice);
 
-  const getproducts = await product.find();
+  const getproducts = await products.find();
   try {
     let aggregationPipeline = [
       {
@@ -64,7 +64,7 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
     } else if (highToLow) {
       aggregationPipeline.unshift({ $sort: { price: -1 } });
     }
-    const getproduct = await product.aggregate(aggregationPipeline);
+    const getproduct = await products.aggregate(aggregationPipeline);
     const perPageArray = getproduct.length;
     const endResult = perPageArray * page;
     const startResult =
@@ -81,12 +81,14 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
         totalResults: getproducts.length,
       },
     };
+    console.log(response)
     return res.status(200).send(response);
   } catch (error) {
     console.log(error);
     return res.status(400).send(error);
   }
 });
+
 export const GET_PRODUCT_LOW_TO_HIGH = expressAsyncHandler(async (req, res) => {
   const getproducts = await product.find();
   try {
@@ -105,7 +107,7 @@ export const GET_PRODUCT_LOW_TO_HIGH = expressAsyncHandler(async (req, res) => {
       { $limit: limit },
     ];
 
-    const getproduct = await product.aggregate(aggregationPipeline);
+    const getproduct = await products.aggregate(aggregationPipeline);
     const perPageArray = getproduct.length;
     const endResult = perPageArray * page;
     const startResult =
@@ -128,12 +130,14 @@ export const GET_PRODUCT_LOW_TO_HIGH = expressAsyncHandler(async (req, res) => {
     return res.status(400).send(error);
   }
 });
+
 export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
   const { slug } = req.params;
+  console.log(slug);
 
   try {
     // const getProduct = await product.findOne({ slug });
-    const getProduct = await product.aggregate([
+    const getProduct = await products.aggregate([
       {
         $match: { slug },
       },
@@ -165,9 +169,9 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
         },
       },
     ]);
-    console.log(getProduct);
-    if (getProduct) {
-      return res.status(200).json(getProduct);
+    const singleProduct = getProduct[0];
+    if (singleProduct) {
+      return res.status(200).json(singleProduct);
     } else {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -200,7 +204,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       trim: true, // trim leading and trailing replacement chars, defaults to `true`
     });
 
-    const newProduct = new product({
+    const newProduct = new products({
       name,
       description,
       slug,
@@ -224,12 +228,13 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       .json({ error: "An error occurred while handling file upload" });
   }
 });
+
 export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
     const imageSlider = req.files.map((file) => file.filename);
 
-    const savedProduct = await product.findByIdAndUpdate(
+    const savedProduct = await products.findByIdAndUpdate(
       id,
       { slider: imageSlider },
       { new: true }

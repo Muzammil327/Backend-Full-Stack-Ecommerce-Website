@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const productSchema = new mongoose.Schema({
+const productsSchema = new Schema({
   name: {
     type: String,
     required: [true, "Enter your Product Name."],
@@ -31,7 +31,6 @@ const productSchema = new mongoose.Schema({
   items: {
     type: String,
     required: [true, "Enter your Product Items."],
-    required: true,
     enum: ["watches", "shirts"],
     lowercase: true,
   },
@@ -51,20 +50,38 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "Enter your Product Image."],
   },
-  // keywords: {
-  //   type: [String],
-  // },
+  keywords: {
+    type: [String],
+  },
   slider: {
     type: [String],
   },
   productId: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "product", required: true },
+    { type: mongoose.Schema.Types.ObjectId, ref: "products", required: true },
   ],
-  // saleProductId: [{ type: mongoose.Schema.Types.ObjectId, ref: "saleProduct" }],
-  // like: [{ type: mongoose.Schema.Types.ObjectId, ref: "saleProduct" }],
-  // dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "saleProduct" }],
+  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+  reviews: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users", // Assuming you have a User model
+      },
+      rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5,
+      },
+      comment: String,
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
 
-const product = mongoose.model("product", productSchema);
+const products = mongoose.model("products", productsSchema);
 
-export default product;
+export default products;
