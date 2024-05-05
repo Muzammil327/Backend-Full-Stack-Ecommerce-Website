@@ -7,7 +7,6 @@ const cartsSchema = new Schema(
     products: { type: Schema.Types.ObjectId, ref: "products" }, // Reference to user model
     name: {
       type: String,
-      unique: true,
     },
     price: {
       type: Number,
