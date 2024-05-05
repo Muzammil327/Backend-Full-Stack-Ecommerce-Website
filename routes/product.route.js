@@ -25,7 +25,6 @@ const storage = new CloudinaryStorage({
     public_id: (req, file) => slugify(file.originalname, { lower: true }), // Use slugified original filename as public_id
   },
 });
-
 const parser = multer({ storage: storage });
 router.get("/get/product", GET_PRODUCT);
 router.get("/get/product/lowToHigh", GET_PRODUCT_LOW_TO_HIGH);

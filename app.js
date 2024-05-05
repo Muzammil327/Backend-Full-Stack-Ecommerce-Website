@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 // env
 dotenv.config();
@@ -25,5 +26,6 @@ app.use(
     extended: true,
   })
 );
+app.use(cookieParser());
 
 export default app;
