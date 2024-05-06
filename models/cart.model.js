@@ -1,27 +1,25 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose from "mongoose";
+import { Schema } from "mongoose";
 
-// Define the schema for the order model
-const cartsSchema = new Schema(
-  {
-    user: { type: Schema.Types.ObjectId, ref: "users" }, // Reference to user model
-    products: { type: Schema.Types.ObjectId, ref: "products" }, // Reference to user model
-    name: {
-      type: String,
-    },
-    price: {
-      type: Number,
-    },
-    quantity: {
-      type: Number,
-    },
-    image: {
-      type: String,
-    },
+const cartsSchema = new mongoose.Schema({
+  // Reference to Products model
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Products",
   },
-  { timestamps: true }
-);
+  // Reference to Users model
+  userId: { type: Schema.Types.ObjectId, ref: "Users" },
+  quantity: {
+    type: Number,
+    min: 1,
+    default: 1,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-const CartModel =
-  mongoose.models.CartModel || mongoose.model("CartModel", cartsSchema);
+const Carts = mongoose.models.Carts || mongoose.model("Carts", cartsSchema);
 
-export default CartModel;
+export default Carts;

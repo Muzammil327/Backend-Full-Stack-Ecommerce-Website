@@ -1,23 +1,25 @@
 import slugify from "slugify";
 import products from "../models/product.model.js";
 import expressAsyncHandler from "express-async-handler";
-import mongoose from "mongoose";
 
-export const GET_ALL_PRODUCT = expressAsyncHandler(async (req, res) => {
+export const ALL_GET_PRODUCT = expressAsyncHandler(async (req, res) => {
   try {
-    const getproduct = await products.find();
-    return res.status(200).send(getproduct);
+    const getproducts = await products.find();
+
+    console.log(getproducts);
+    return res.status(200).send(getproducts);
   } catch (error) {
     console.log(error);
     return res.status(400).send(error);
   }
 });
+
 export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Default page is 1 if not provided or invalid
+  const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 6;
-  const subCategory = req.query.subCatgeory; // Directly use the category query parameter
-  const category = req.query.category; // Directly use the category query parameter
-  const tags = req.query.tags; // Directly use the category query parameter
+  const subCategory = req.query.subCatgeory;
+  const category = req.query.category;
+  const tags = req.query.tags;
 
   const lowToHigh = req.query.lowToHigh;
   const highToLow = req.query.highToLow;
@@ -81,49 +83,7 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
         totalResults: getproducts.length,
       },
     };
-    console.log(response)
-    return res.status(200).send(response);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send(error);
-  }
-});
-
-export const GET_PRODUCT_LOW_TO_HIGH = expressAsyncHandler(async (req, res) => {
-  const getproducts = await product.find();
-  try {
-    let aggregationPipeline = [
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          slug: 1,
-          image: 1,
-          price: 1,
-          category: 1,
-        },
-      },
-      { $skip: (page - 1) * limit },
-      { $limit: limit },
-    ];
-
-    const getproduct = await products.aggregate(aggregationPipeline);
-    const perPageArray = getproduct.length;
-    const endResult = perPageArray * page;
-    const startResult =
-      getproduct.length === 0 ? 0 : (page - 1) * getproduct.length + 1;
-
-    const response = {
-      products: getproduct,
-      pagination: {
-        page: page,
-        limit: limit,
-        endResult: endResult,
-        startResult: startResult,
-        totalPages: Math.ceil(getproducts.length / limit),
-        totalResults: getproducts.length,
-      },
-    };
+    console.log(response);
     return res.status(200).send(response);
   } catch (error) {
     console.log(error);
@@ -164,8 +124,9 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
           "relatedProducts._id": 1, // Include the related products in the result
           "relatedProducts.name": 1, // Include the related products in the result
           "relatedProducts.image": 1, // Include the related products in the result
-          "relatedProducts.description": 1, // Include the related products in the result
           "relatedProducts.slug": 1, // Include the related products in the result
+          "relatedProducts.price": 1, // Include the related products in the result
+          "relatedProducts.category": 1, // Include the related products in the result
         },
       },
     ]);

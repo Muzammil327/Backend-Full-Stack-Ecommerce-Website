@@ -2,10 +2,9 @@ import express from "express";
 import {
   GET_PRODUCT,
   Post_PRODUCT,
-  GET_PRODUCT_LOW_TO_HIGH,
   GET_SINGLE_PRODUCT,
-  GET_ALL_PRODUCT,
   Put_PRODUCT,
+  ALL_GET_PRODUCT,
 } from "../controllers/product.controller.js";
 import multer from "multer";
 import slugify from "slugify";
@@ -21,16 +20,31 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "some-folder-name",
-    public_id: (req, file) => slugify(file.originalname, { lower: true }), // Use slugified original filename as public_id
+    folder: "banner-product",
+    public_id: (req, file) => {
+      const timestamp = Date.now(); // Get current timestamp
+      const fileName = slugify(file.originalname, { lower: true }); // Slugify original filename
+      return `${timestamp}_${fileName}`; // Concatenate timestamp and filename
+    },
   },
 });
 const parser = multer({ storage: storage });
+const storageMultiple = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "slider-product",
+    public_id: (req, file) => {
+      const timestamp = Date.now(); // Get current timestamp
+      const fileName = slugify(file.originalname, { lower: true }); // Slugify original filename
+      return `${timestamp}_${fileName}`; // Concatenate timestamp and filename
+    },
+  },
+});
+const parserMultiple = multer({ storage: storageMultiple });
+router.get("/get/allProduct", ALL_GET_PRODUCT);
 router.get("/get/product", GET_PRODUCT);
-router.get("/get/product/lowToHigh", GET_PRODUCT_LOW_TO_HIGH);
-router.get("/get/allProduct", GET_ALL_PRODUCT);
 router.post("/post/product", parser.single("image"), Post_PRODUCT);
-router.put("/put/product/:id", parser.array("slider"), Put_PRODUCT);
+router.put("/put/product/:id", parserMultiple.array("slider"), Put_PRODUCT);
 router.get("/get/product/:slug", GET_SINGLE_PRODUCT);
 
 export default router;

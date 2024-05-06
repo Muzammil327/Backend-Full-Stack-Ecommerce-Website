@@ -30,7 +30,6 @@ const productsSchema = new Schema({
   },
   items: {
     type: String,
-    required: [true, "Enter your Product Items."],
     enum: ["watches", "shirts"],
     lowercase: true,
   },
@@ -57,19 +56,18 @@ const productsSchema = new Schema({
     type: [String],
   },
   productId: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "products", required: true },
+    { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
   ],
-  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
-  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
+  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
   reviews: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users", // Assuming you have a User model
+        ref: "Users", 
       },
       rating: {
         type: Number,
-        required: true,
         min: 1,
         max: 5,
       },
@@ -81,7 +79,7 @@ const productsSchema = new Schema({
     },
   ],
 });
+const Products =
+  mongoose.models.Products || mongoose.model("Products", productsSchema);
 
-const products = mongoose.model("products", productsSchema);
-
-export default products;
+export default Products;

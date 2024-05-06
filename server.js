@@ -1,6 +1,7 @@
 import app from "./app.js";
 import product from "./routes/product.route.js";
 import cart from "./routes/cart.route.js";
+import pendingOrder from "./routes/pendingOrder.route.js";
 import connectDB from "./utils/dbConn.js";
 
 const port = 5000;
@@ -12,6 +13,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", product);
 app.use("/api", cart);
+app.use("/api", pendingOrder);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
