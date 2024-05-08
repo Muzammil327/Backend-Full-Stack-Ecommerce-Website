@@ -5,20 +5,22 @@ import mongoose from "mongoose";
 
 export const Post_Pending_Order = expressAsyncHandler(async (req, res) => {
   try {
-    const { cartBuy, user } = req.body;
+    const { cartBuy, userId } = req.body;
+    const cart = await Carts.findOne({ userId: userId });
+    if (cart) {
+      res.status(200).json("savedProduct");
+    } else {
+      const newProduct = new PendingOrders({
+        cartBuy: cartBuy,
+        userId,
+      });
+      // Save the new product to the database
+      const savedProduct = await newProduct.save();
+      // Send the saved product as a response
+      // await Carts.deleteMany({ _id: { $in: cartBuy } });
 
-    const newProduct = new PendingOrders({
-      cartBuy,
-      userId: user,
-    });
-    // Save the new product to the database
-    const savedProduct = await newProduct.save();
-    console.log("savedProduct:", savedProduct);
-    // Send the saved product as a response
-    // await Carts.deleteMany({ _id: { $in: cartBuy } });
-
-    // res.status(200).json(savedProduct);
-    // }
+      res.status(200).json(savedProduct);
+    }
   } catch (error) {
     console.error("Error handling file upload:", error);
     res
@@ -62,64 +64,18 @@ export const Delete_Cart = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export const Update_Cart_Increase = expressAsyncHandler(async (req, res) => {
-  const { _id } = req.params;
-  const { quantity } = req.body;
+export const GET_PENDINGORDER_ADMIN_STATS = expressAsyncHandler(async (req, res) => {
   try {
-    const existingProduct = await Carts.findOne({
-      _id: _id,
-    });
-    if (existingProduct) {
-      // If the product already exists, increase its quantity
-      existingProduct.quantity = quantity + 1;
-      await existingProduct.save();
-      res.status(200).json(existingProduct);
-    } else {
-      const newCart = new CartModel({
-        quantity: parsedQuantity,
-      });
-      const savedCart = await newCart.save();
-      console.log(savedCart);
-
-      res.status(200).json(savedCart);
-    }
-
-    // Send the saved product as a response
+    const getFavouriteProducts = await PendingOrders.aggregate([
+      {
+        $project: {
+          _id: 1,
+        },
+      },
+    ]);
+    return res.status(200).send(getFavouriteProducts);
   } catch (error) {
-    console.error("Error handling file upload:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while handling file upload" });
-  }
-});
-
-export const Update_Cart_Decrease = expressAsyncHandler(async (req, res) => {
-  const { _id } = req.params;
-  const { quantity } = req.body;
-  try {
-    const existingProduct = await Carts.findOne({
-      _id: _id,
-    });
-    if (existingProduct) {
-      // If the product already exists, increase its quantity
-      existingProduct.quantity = quantity - 1;
-      await existingProduct.save();
-      res.status(200).json(existingProduct);
-    } else {
-      const newCart = new CartModel({
-        quantity: parsedQuantity,
-      });
-      const savedCart = await newCart.save();
-      console.log(savedCart);
-
-      res.status(200).json(savedCart);
-    }
-
-    // Send the saved product as a response
-  } catch (error) {
-    console.error("Error handling file upload:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while handling file upload" });
+    console.log(error);
+    return res.status(400).send(error);
   }
 });

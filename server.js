@@ -18,9 +18,9 @@ app.use("/api/v1/product", product);
 
 app.use("/api/v1/cart", cart);
 app.use("/api/v1/favourite", favourite);
-app.use("/api", pendingOrder);
+app.use("/api/v1/pendingOrder", pendingOrder);
 app.use("/api", order);
-app.use("/api", user);
+app.use("/api/v1/user", user);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

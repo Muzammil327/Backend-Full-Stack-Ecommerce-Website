@@ -6,11 +6,6 @@ const pendingOrdersSchema = new mongoose.Schema({
     {
       _id: { type: Schema.Types.ObjectId, required: true },
       quantity: { type: Number, required: true },
-      product: {
-        name: { type: String, required: true },
-        image: { type: String, required: true },
-        price: { type: Number, required: true },
-      },
     },
   ],
 });

@@ -4,8 +4,8 @@ import { PUT_USER } from "../controllers/user/put/userUpdate.controller.js";
 
 const router = express.Router();
 
-router.get("/get/user", GET_ALL_USER);
-router.get("/get/user/:id", GET_SINGLE_USER);
+router.get("/get", GET_ALL_USER);
+router.get("/get/:id", GET_SINGLE_USER);
 
-router.put("/update/user/:id", PUT_USER);
+router.put("/update/:id", PUT_USER);
 export default router;
