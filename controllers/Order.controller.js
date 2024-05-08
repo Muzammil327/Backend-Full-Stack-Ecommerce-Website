@@ -1,23 +1,28 @@
-import PendingOrders from "../models/pendingOrder.model.js";
+import Orders from "../models/order.model.js";
 import Carts from "../models/cart.model.js";
+import PendingOrder from "../models/pendingOrder.model.js";
 import expressAsyncHandler from "express-async-handler";
 import mongoose from "mongoose";
 
-export const Post_Pending_Order = expressAsyncHandler(async (req, res) => {
+export const Post_Order = expressAsyncHandler(async (req, res) => {
   try {
-    const { cartBuy, user } = req.body;
+    const { cartBuy, user, total } = req.body;
 
-    const newProduct = new PendingOrders({
-      cartBuy,
+    console.log("total:", total);
+    console.log(cartBuy, user, total);
+    const newProduct = new Orders({
+      productId: cartBuy,
       userId: user,
+      totalPrice: total,
     });
     // Save the new product to the database
     const savedProduct = await newProduct.save();
     console.log("savedProduct:", savedProduct);
     // Send the saved product as a response
-    // await Carts.deleteMany({ _id: { $in: cartBuy } });
+    await Carts.deleteMany({ _id: { $in: cartBuy } });
+    await PendingOrder.deleteMany({ _id: { $in: cartBuy } });
 
-    // res.status(200).json(savedProduct);
+    res.status(200).json(savedProduct);
     // }
   } catch (error) {
     console.error("Error handling file upload:", error);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Schema } from "mongoose";
 
 const ordersSchema = new mongoose.Schema({
   userId: { type: Schema.Types.ObjectId, ref: "Users" }, // Reference to user model

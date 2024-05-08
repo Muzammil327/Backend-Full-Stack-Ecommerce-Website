@@ -10,8 +10,8 @@ const usersSchema = new mongoose.Schema({
   zipCode: { type: String, default: "" },
   address: { type: String, default: "" },
   phone: { type: String, default: "" },
-  cart: [{ type: Schema.Types.ObjectId, ref: "Carts" }],
-  orders: [{ type: Schema.Types.ObjectId, ref: "Orders" }],
+  // cart: [{ type: Schema.Types.ObjectId, ref: "Carts" }],
+  // orders: [{ type: Schema.Types.ObjectId, ref: "Orders" }],
 });
 
 const Users = mongoose.models.Users || mongoose.model("Users", usersSchema);
