@@ -9,9 +9,9 @@ dotenv.config();
 
 const app = express();
 const corsURL = [
-  "https://full-stack-ecommerce-website-five.vercel.app",
-  "http://localhost:3000",
-  "http://localhost:5173",
+  process.env.corsURL_1,
+  process.env.corsURL_2,
+  process.env.corsURL_3,
 ];
 app.use(
   cors({

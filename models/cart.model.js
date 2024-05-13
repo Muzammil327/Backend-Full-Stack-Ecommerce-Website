@@ -2,14 +2,12 @@ import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
 const cartsSchema = new mongoose.Schema({
-  // Reference to Products model
-  productId: {
+  product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Products",
   },
-  // Reference to Users model
-  userId: { type: Schema.Types.ObjectId, ref: "Users" },
-  quantity: {
+  user: { type: Schema.Types.ObjectId, ref: "Users" },
+  qty: {
     type: Number,
     min: 1,
     default: 1,
@@ -23,3 +21,4 @@ const cartsSchema = new mongoose.Schema({
 const Carts = mongoose.models.Carts || mongoose.model("Carts", cartsSchema);
 
 export default Carts;
+// productId, userId, quantity

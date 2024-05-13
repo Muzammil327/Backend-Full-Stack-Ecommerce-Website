@@ -1,42 +1,35 @@
 import cloudinary from "cloudinary";
+import dotenv from "dotenv";
+dotenv.config();
 
 cloudinary.config({
-  cloud_name: "desggllml",
-  api_key: "837553215969782",
-  api_secret: "zypuvbf8YyPZAixTcvuxWhycZro",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const cloudinaryUploadImg = async (fileToUploads) => {
-  return new Promise((resolve) => {
-    cloudinary.uploader.upload(fileToUploads, (result) => {
-      resolve(
-        {
-          url: result.secure_url,
-          asset_id: result.asset_id,
-          public_id: result.public_id,
-        },
-        {
-          resource_type: "auto",
-        }
-      );
+export const uploadImageToCloudinary = async (file) => {
+  try {
+    // Upload the image to Cloudinary
+    const result = await cloudinary.uploader.upload(file, {
+      folder: "Banner",
+      maxFileSize: 1 * 1024 * 1024, // 1MB
     });
-  });
-};
-export const cloudinaryDeleteImg = async (fileToDelete) => {
-  return new Promise((resolve) => {
-    cloudinary.uploader.destroy(fileToDelete, (result) => {
-      resolve(
-        {
-          url: result.secure_url,
-          asset_id: result.asset_id,
-          public_id: result.public_id,
-        },
-        {
-          resource_type: "auto",
-        }
-      );
-    });
-  });
+
+    return result.secure_url;
+  } catch (error) {
+    console.error("Error uploading image to Cloudinary:", error);
+    throw error;
+  }
 };
 
- 
+export const deleteImageFromCloudinary = async (publicId) => {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    console.log("Image deleted successfully from Cloudinary:", result);
+    return result;
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+    throw error;
+  }
+};

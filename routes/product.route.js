@@ -1,52 +1,40 @@
 import express from "express";
 import {
   Post_PRODUCT,
+  DELETE_PRODUCT,
+  DELETE_PRODUCT_IMAGE,
   Put_PRODUCT,
-  ALL_GET_PRODUCT,
+  Put_SLIDER_PRODUCT,
 } from "../controllers/product.controller.js";
-import multer from "multer";
-import slugify from "slugify";
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { GET_PRODUCT_STATS, GET_PRODUCT, GET_SINGLE_PRODUCT } from "../controllers/product/get/productGet.controller.js";
+import {
+  GET_PRODUCT_STATS,
+  GET_PRODUCT,
+  GET_SINGLE_PRODUCT,
+  GET_SINGLE_PRODUCTBYID,
+  GET_PRODUCT_Admin,
+  ALL_GET_PRODUCT,
+} from "../controllers/productGet.controller.js";
+import { uploadBannerImage, uploadSliderImage } from "../utils/multer.js";
 
 const router = express.Router();
-cloudinary.config({
-  cloud_name: "desggllml",
-  api_key: "837553215969782",
-  api_secret: "zypuvbf8YyPZAixTcvuxWhycZro",
-});
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "banner-product",
-    public_id: (req, file) => {
-      const timestamp = Date.now(); // Get current timestamp
-      const fileName = slugify(file.originalname, { lower: true }); // Slugify original filename
-      return `${timestamp}_${fileName}`; // Concatenate timestamp and filename
-    },
-  },
-});
-const parser = multer({ storage: storage });
-const storageMultiple = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "slider-product",
-    public_id: (req, file) => {
-      const timestamp = Date.now(); // Get current timestamp
-      const fileName = slugify(file.originalname, { lower: true }); // Slugify original filename
-      return `${timestamp}_${fileName}`; // Concatenate timestamp and filename
-    },
-  },
-});
-const parserMultiple = multer({ storage: storageMultiple });
+
+router.post("/post", uploadBannerImage.single("image"), Post_PRODUCT);
 
 router.get("/stats", GET_PRODUCT_STATS);
 router.get("/get", GET_PRODUCT); // store => filtering and sorting
 router.get("/get/:slug", GET_SINGLE_PRODUCT); // products details
-
+router.get("/getid/:id", GET_SINGLE_PRODUCTBYID);
+router.get("/get/admin", GET_PRODUCT_Admin); // store => filtering and sorting
 router.get("/get/allProduct", ALL_GET_PRODUCT);
-router.post("/post/product", parser.single("image"), Post_PRODUCT);
-router.put("/put/product/:id", parserMultiple.array("slider"), Put_PRODUCT);
+
+router.delete("/delete/:id", DELETE_PRODUCT);
+router.delete("/deleteImage", DELETE_PRODUCT_IMAGE);
+
+router.put("/put/:id", uploadBannerImage.single("image"), Put_PRODUCT);
+router.put(
+  "/put/slider/:id",
+  uploadSliderImage.array("slider"),
+  Put_SLIDER_PRODUCT
+);
 
 export default router;

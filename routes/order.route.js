@@ -1,17 +1,18 @@
 import express from "express";
 import {
   Post_Order,
-  Get_Pending_Order,
-  Delete_Cart,
-  Update_Cart_Increase,
-  Update_Cart_Decrease,
+  Get_ORDER_User,
+  GET_STATS_Order,
+  Update_ORDER,
+  getOrdersByStatus,
 } from "../controllers/Order.controller.js";
 
 const router = express.Router();
 
-router.post("/post/order", Post_Order);
-router.get("/get/pendingOrder/:user", Get_Pending_Order);
-router.delete("/delete/cart/:productId", Delete_Cart);
-router.put("/update/cartIncrease/:_id", Update_Cart_Increase);
-router.put("/update/cartDecrease/:_id", Update_Cart_Decrease);
+router.get("/stats", GET_STATS_Order);
+router.post("/post", Post_Order);
+router.get("/get/:user", Get_ORDER_User);
+router.put("/update/:orderId", Update_ORDER);
+router.get("/get/:status", getOrdersByStatus);
+
 export default router;

@@ -4,110 +4,78 @@ import mongoose from "mongoose";
 
 export const Post_Cart = expressAsyncHandler(async (req, res) => {
   try {
-    const { userId, productId } = req.body;
-    const cart = await Carts.findOne({ productId });
+    const { user, product } = req.body;
+
+    const cart = await Carts.findOne({ product, user });
     if (cart) {
-      // If cart item exists, increase its quantity
-      cart.quantity += 1;
-      // Save the updated cart item
-      await cart.save(); // Make sure to await the save operation
-      // Send a success response
-      res.status(200).json({ message: "Cart item updated successfully" });
+      cart.qty += 1;
+      await cart.save();
+      res.status(200).json({ message: "Cart updated successfully" });
     } else {
       const newProduct = new Carts({
-        userId,
-        productId,
+        user,
+        product,
       });
-      // Save the new product to the database
       const savedProduct = await newProduct.save();
-      console.log(savedProduct)
-
-      // Send the saved product as a response
       res
         .status(200)
-        .json({ message: "New Items added successfully!", savedProduct });
+        .json({ message: "New Items added in Cart!", savedProduct });
     }
   } catch (error) {
     console.error("Error handling Cart item posting:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while handling Cart item posting." });
+    res.status(500).json({ error: "Error handling Cart item posting!" });
   }
 });
 
-export const Get_Cart = expressAsyncHandler(async (req, res) => {
+export const Get_Cart_User = expressAsyncHandler(async (req, res) => {
   const { user } = req.params;
+
   try {
     const cart = await Carts.aggregate([
       {
         $match: {
-          userId: new mongoose.Types.ObjectId(user),
+          user: new mongoose.Types.ObjectId(user),
         },
       },
       {
         $lookup: {
           from: "products", // Name of the collection to join with
-          localField: "productId", // Field in the Carts collection
+          localField: "product", // Field in the Carts collection
           foreignField: "_id", // Field in the Products collection
-          as: "product", // Alias for the joined data
+          as: "product_Detail", // Alias for the joined data
         },
       },
       {
-        $unwind: "$product",
+        $unwind: "$product_Detail",
       },
       {
         $project: {
           _id: 1,
-          quantity: 1,
-          // createdAt: 1,
-          "product.image": 1,
-          "product.price": 1,
-          "product.name": 1,
+          qty: 1,
+          "product_Detail._id": 1,
+          "product_Detail.image": 1,
+          "product_Detail.price": 1,
+          "product_Detail.name": 1,
         },
       },
     ]);
-    // Send the saved product as a response
     res.status(200).json(cart);
   } catch (error) {
-    console.error("Error handling file upload:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while handling file upload" });
+    console.error("Error handling Cart item geting:", error);
+    res.status(500).json({ error: "Error handling Cart item geting!" });
   }
 });
 
-export const GET_CART_ADMIN_STATS = expressAsyncHandler(async (req, res) => {
+export const GET_CART_ADMIN = expressAsyncHandler(async (req, res) => {
   try {
-    const getFavouriteProducts = await Carts.aggregate([
+    const getTotalCart = await Carts.aggregate([
       {
         $project: {
           _id: 1,
         },
       },
     ]);
-    return res.status(200).send(getFavouriteProducts);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send(error);
-  }
-});
-
-export const GET_CART_USER_STATS = expressAsyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const getFavouriteProducts = await Carts.aggregate([
-      {
-        $match: {
-          userId: new mongoose.Types.ObjectId(userId),
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-        },
-      },
-    ]);
-    return res.status(200).send(getFavouriteProducts);
+    return res.status(200).send(getTotalCart);
   } catch (error) {
     console.log(error);
     return res.status(400).send(error);
@@ -115,82 +83,72 @@ export const GET_CART_USER_STATS = expressAsyncHandler(async (req, res) => {
 });
 
 export const Delete_Cart = expressAsyncHandler(async (req, res) => {
-  const { productId } = req.params;
+  const { cartId } = req.params;
   try {
-    const deletedCart = await Carts.findByIdAndDelete({ _id: productId });
-
-    // Send the saved product as a response
-    res.status(200).json(deletedCart);
-  } catch (error) {
-    console.error("Error handling file upload:", error);
+    const deletedCart = await Carts.findByIdAndDelete({ _id: cartId });
     res
-      .status(500)
-      .json({ error: "An error occurred while handling file upload" });
+      .status(200)
+      .json({ message: "Cart Item Deleted Successfully!", deletedCart });
+  } catch (error) {
+    console.error("Error handling Cart item deleting:", error);
+    res.status(500).json({ error: "Error handling Cart item deleting" });
   }
 });
 
 export const Update_Cart_Increase = expressAsyncHandler(async (req, res) => {
-  const { _id } = req.params;
-  const { quantity } = req.body;
+  const { cartId } = req.params;
+  const { qty } = req.body;
   try {
     const existingProduct = await Carts.findOne({
-      _id: _id,
+      _id: cartId,
     });
     if (existingProduct) {
       // If the product already exists, increase its quantity
-      existingProduct.quantity = quantity + 1;
+      existingProduct.qty = qty + 1;
       await existingProduct.save();
       res.status(200).json(existingProduct);
     } else {
       const newCart = new CartModel({
-        quantity: parsedQuantity,
+        qty: parsedQuantity,
       });
       const savedCart = await newCart.save();
-      console.log(savedCart);
 
       res.status(200).json(savedCart);
     }
-
-    // Send the saved product as a response
   } catch (error) {
-    console.error("Error handling file upload:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while handling file upload" });
+    console.error("Error handling Cart item Increasing:", error);
+    res.status(500).json({ error: "Error handling Cart item Increasing" });
   }
 });
 
 export const Update_Cart_Decrease = expressAsyncHandler(async (req, res) => {
-  const { _id } = req.params;
-  const { quantity } = req.body;
+  const { cartId } = req.params;
+  const { qty } = req.body;
   try {
     const existingProduct = await Carts.findOne({
-      _id: _id,
+      _id: cartId,
     });
     if (existingProduct) {
       // Decrease the quantity if it's greater than 1
-      if (existingProduct.quantity > 1) {
-        existingProduct.quantity = quantity - 1;
+      if (existingProduct.qty > 1) {
+        existingProduct.qty = qty - 1;
         await existingProduct.save();
         res.status(200).json(existingProduct);
       } else {
         // If quantity is 1 or less, remove the item from the cart
-        await Carts.deleteOne({ _id: _id }); // Adjust this line
+        await Carts.deleteOne({ _id: cartId }); // Adjust this line
         res.status(200).json({ message: "Product removed from cart" });
       }
     } else {
       const newCart = new Carts({
-        quantity: parsedQuantity,
+        qty: parsedQuantity,
       });
       const savedCart = await newCart.save();
-      console.log(savedCart);
 
       res.status(200).json(savedCart);
     }
   } catch (error) {
-    console.error("Error handling file upload:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while handling file upload" });
+    console.error("Error handling Cart item Decreasing:", error);
+    res.status(500).json({ error: "Error handling Cart item Decreasing" });
   }
 });

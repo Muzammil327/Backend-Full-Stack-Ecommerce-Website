@@ -3,51 +3,50 @@ import mongoose, { Schema } from "mongoose";
 const productsSchema = new Schema({
   name: {
     type: String,
-    required: [true, "Enter your Product Name."],
-    unique: true,
+    // required: [true, "Enter your Product Name."],
   },
   description: {
     type: String,
-    required: [true, "Enter your Product Description."],
+    // required: [true, "Enter your Product Description."],
   },
   slug: {
     type: String,
-    required: [true, "Enter your Product Slug."],
-    unique: true,
+    // required: [true, "Enter your Product Slug."],
     lowercase: true,
   },
   category: {
     type: String,
     enum: ["men", "women", "children"],
     lowercase: true,
-    required: [true, "Enter your Product Catgeory."],
+    // required: [true, "Enter your Product Catgeory."],
   },
   subCategory: {
     type: String,
-    required: [true, "Enter your Product Sub Catgeory."],
+    // required: [true, "Enter your Product Sub Catgeory."],
     enum: ["clothing", "accessories"],
     lowercase: true,
   },
   items: {
     type: String,
-    enum: ["watches", "shirts"],
+    // required: [true, "Enter your Product Sub Catgeory."],
+    // enum: ["clothing", "accessories"],
     lowercase: true,
   },
   price: {
     type: Number,
-    required: [true, "Enter your Product Price."],
+    // required: [true, "Enter your Product Price."],
   },
   discountprice: {
     type: Number,
-    required: [true, "Enter your Product Discount Price."],
+    // required: [true, "Enter your Product Discount Price."],
   },
   quantity: {
     type: Number,
-    required: [true, "Enter your Product Quantity in Stock."],
+    // required: [true, "Enter your Product Quantity in Stock."],
   },
   image: {
     type: String,
-    required: [true, "Enter your Product Image."],
+    // required: [true, "Enter your Product Image."],
   },
   keywords: {
     type: [String],
@@ -55,29 +54,53 @@ const productsSchema = new Schema({
   slider: {
     type: [String],
   },
-  productId: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
-  ],
-  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
-  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
-  reviews: [
+  status: {
+    type: String,
+    enum: ["active", "out of stock"],
+    default: "active",
+  },
+  freeDelivery: {
+    type: Boolean,
+    default: false,
+  },
+  bestPrice: {
+    type: Boolean,
+    default: false,
+  },
+  feature: {
+    type: Boolean,
+    default: false,
+  },
+  top: {
+    type: Boolean,
+    default: false,
+  },
+  // variants: [
+  //   {
+  //     size: { type: String },
+  //     quantity: { type: Number },
+  //     color: { type: String },
+  //     material: { type: String },
+  //     price: { type: Number },
+  //     stockQuantity: { type: Number },
+  //     dimensions: {
+  //       length: { type: Number },
+  //       width: { type: Number },
+  //       height: { type: Number },
+  //     },
+  //     weight: { type: Number },
+  //   },
+  // ],
+  product: [
     {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Users", 
-      },
-      rating: {
-        type: Number,
-        min: 1,
-        max: 5,
-      },
-      comment: String,
-      createdAt: {
-        type: Date,
-        default: Date.now,
+      value: { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
+      label: {
+        type: String,
       },
     },
   ],
+  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
+  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
 });
 const Products =
   mongoose.models.Products || mongoose.model("Products", productsSchema);

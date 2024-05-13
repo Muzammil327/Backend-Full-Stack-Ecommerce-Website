@@ -1,17 +1,22 @@
 import mongoose, { Schema } from "mongoose";
 
-const pendingOrdersSchema = new mongoose.Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "Users" }, // Reference to user model
-  cartBuy: [
-    {
-      _id: { type: Schema.Types.ObjectId, required: true },
-      quantity: { type: Number, required: true },
-    },
-  ],
+const POrderSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Products",
+  },
+  user: { type: Schema.Types.ObjectId, ref: "Users" },
+  qty: {
+    type: Number,
+    min: 1,
+    default: 1,
+  },
 });
 
-const PendingOrders =
-  mongoose.models.PendingOrders ||
-  mongoose.model("PendingOrders", pendingOrdersSchema);
+const POrder =
+  mongoose.models.POrder ||
+  mongoose.model("POrder", POrderSchema);
 
-export default PendingOrders;
+export default POrder;
+
+// userId, productId, quantity
