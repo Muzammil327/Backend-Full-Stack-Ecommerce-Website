@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.post("/post", Post_Address);
 router.get("/get/:user", Get_Single_Address);
-router.put("/update/:user", Update_Address);
+router.put("/update/:id", Update_Address);
 
 export default router;

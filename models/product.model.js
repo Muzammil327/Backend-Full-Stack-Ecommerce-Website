@@ -26,6 +26,12 @@ const productsSchema = new Schema({
     enum: ["clothing", "accessories"],
     lowercase: true,
   },
+  // platform: {
+  //   type: String,
+  //   // required: [true, "Enter your Product Platform."],
+  //   enum: ["markaz"],
+  //   lowercase: true,
+  // },
   items: {
     type: String,
     // required: [true, "Enter your Product Sub Catgeory."],

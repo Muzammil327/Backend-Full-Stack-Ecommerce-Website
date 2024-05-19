@@ -123,6 +123,8 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
           price: 1,
           quantity: 1,
           slider: 1,
+          like: 1,
+          dislike: 1,
           "relatedProducts._id": 1, // Include the related products in the result
           "relatedProducts.name": 1, // Include the related products in the result
           "relatedProducts.image": 1, // Include the related products in the result

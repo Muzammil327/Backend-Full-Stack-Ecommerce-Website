@@ -5,6 +5,8 @@ import {
   DELETE_PRODUCT_IMAGE,
   Put_PRODUCT,
   Put_SLIDER_PRODUCT,
+  Put_PRODUCT_DisLike,
+  Put_PRODUCT_Like,
 } from "../controllers/product.controller.js";
 import {
   GET_PRODUCT_STATS,
@@ -36,5 +38,7 @@ router.put(
   uploadSliderImage.array("slider"),
   Put_SLIDER_PRODUCT
 );
+router.put("/put/like/:id", Put_PRODUCT_Like);
+router.put("/put/dislike/:id", Put_PRODUCT_DisLike);
 
 export default router;

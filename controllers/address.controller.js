@@ -28,7 +28,7 @@ export const Post_Address = expressAsyncHandler(async (req, res) => {
       user,
     });
     const savedProduct = await newProduct.save();
-    res.status(200).json({ message: "New Items added in Cart!", savedProduct });
+    res.status(200).json({ message: "Shippping Address Updated!", savedProduct });
   } catch (error) {
     console.error("Error handling Cart item posting:", error);
     res.status(500).json({ error: "Error handling Cart item posting!" });
@@ -36,8 +36,7 @@ export const Post_Address = expressAsyncHandler(async (req, res) => {
 });
 
 export const Update_Address = expressAsyncHandler(async (req, res) => {
-  const { user } = req.params;
-  console.log(user)
+  const { id } = req.params;
   const {
     addressLine1,
     addressLine2,
@@ -48,10 +47,9 @@ export const Update_Address = expressAsyncHandler(async (req, res) => {
     phone2,
     additionalInfo,
   } = req.body;
-
   try {
     const updatedAddress = await Address.findByIdAndUpdate(
-      user,
+      { _id: new mongoose.Types.ObjectId(id) },
       {
         addressLine1,
         addressLine2,
@@ -67,7 +65,6 @@ export const Update_Address = expressAsyncHandler(async (req, res) => {
       }
     );
 
-    console.log(updatedAddress);
     res.status(200).json(updatedAddress);
   } catch (error) {
     console.error("Error updating address:", error);
@@ -114,6 +111,7 @@ export const Get_Single_Address = expressAsyncHandler(async (req, res) => {
         },
       },
     ]);
+    console.log(cart)
     res.status(200).json(cart[0]);
   } catch (error) {
     console.error("Error handling Cart item geting:", error);
