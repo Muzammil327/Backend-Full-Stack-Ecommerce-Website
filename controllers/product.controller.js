@@ -254,6 +254,7 @@ export const Put_PRODUCT_Like = expressAsyncHandler(async (req, res) => {
   try {
     let updatedProduct;
     const userIndex = product.like.indexOf(user);
+    console.log("userIndex Like:", userIndex);
 
     if (userIndex === -1) {
       updatedProduct = await products.findByIdAndUpdate(
@@ -302,9 +303,10 @@ export const Put_PRODUCT_DisLike = expressAsyncHandler(async (req, res) => {
     let updatedProduct;
     const userIndexLike = product.like.indexOf(user);
     const userIndex = product.dislike.indexOf(user);
-    console.log("userIndexLike:", userIndexLike);
-    console.log("userIndex:", userIndex);
-    if (userIndexLike === 0 && userIndex === -1) {
+    console.log("userIndex Dislike:", userIndex);
+    console.log("userIndexLike Dislike:", userIndexLike);
+
+    if (userIndex === -1) {
       updatedProduct = await products.findByIdAndUpdate(
         id,
         {
