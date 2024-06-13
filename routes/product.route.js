@@ -13,8 +13,6 @@ import {
   GET_PRODUCT,
   GET_SINGLE_PRODUCT,
   GET_SINGLE_PRODUCTBYID,
-  GET_PRODUCT_Admin,
-  ALL_GET_PRODUCT,
 } from "../controllers/productGet.controller.js";
 import { uploadBannerImage, uploadSliderImage } from "../utils/multer.js";
 
@@ -22,12 +20,10 @@ const router = express.Router();
 
 router.post("/post", uploadBannerImage.single("image"), Post_PRODUCT);
 
-router.get("/stats", GET_PRODUCT_STATS);
-router.get("/get", GET_PRODUCT); // store => filtering and sorting
+router.get("/stats", GET_PRODUCT_STATS); // Product_GET
+router.get("/get", GET_PRODUCT); // Product_STORE
 router.get("/get/:slug", GET_SINGLE_PRODUCT); // products details
 router.get("/getid/:id", GET_SINGLE_PRODUCTBYID);
-router.get("/get/admin", GET_PRODUCT_Admin); // store => filtering and sorting
-router.get("/get/allProduct", ALL_GET_PRODUCT);
 
 router.delete("/delete/:id", DELETE_PRODUCT);
 router.delete("/deleteImage", DELETE_PRODUCT_IMAGE);

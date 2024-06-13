@@ -3,11 +3,11 @@ import mongoose, { Schema } from "mongoose";
 const productsSchema = new Schema({
   name: {
     type: String,
-    // required: [true, "Enter your Product Name."],
+    required: [true, "Enter your Product Name."],
   },
   description: {
     type: String,
-    // required: [true, "Enter your Product Description."],
+    required: [true, "Enter your Product Description."],
   },
   slug: {
     type: String,
@@ -26,12 +26,12 @@ const productsSchema = new Schema({
     enum: ["clothing", "accessories"],
     lowercase: true,
   },
-  // platform: {
-  //   type: String,
-  //   // required: [true, "Enter your Product Platform."],
-  //   enum: ["markaz"],
-  //   lowercase: true,
-  // },
+  platform: {
+    type: String,
+    // required: [true, "Enter your Product Platform."],
+    enum: ["markaz", "hhcdropshipping", "sadadropship"],
+    lowercase: true,
+  },
   items: {
     type: String,
     // required: [true, "Enter your Product Sub Catgeory."],
@@ -39,6 +39,10 @@ const productsSchema = new Schema({
     lowercase: true,
   },
   price: {
+    type: Number,
+    // required: [true, "Enter your Product Price."],
+  },
+  deliveryCharge: {
     type: Number,
     // required: [true, "Enter your Product Price."],
   },

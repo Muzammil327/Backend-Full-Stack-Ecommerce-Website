@@ -55,7 +55,7 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
       aggregationPipeline.unshift({ $match: { subCategory: subCategory } });
     }
     if (tags) {
-      aggregationPipeline.unshift({ $match: { tags: tags } });
+      aggregationPipeline.unshift({ $match: { items: tags } });
     }
     if (lowPrice && highPrice) {
       aggregationPipeline.unshift({
@@ -198,67 +198,5 @@ export const GET_SINGLE_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-export const GET_PRODUCT_Admin = expressAsyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 6;
-
-  const getproducts = await products.find();
-  try {
-    let aggregationPipeline = [
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          slug: 1,
-          image: 1,
-          price: 1,
-          category: 1,
-          slider: 1,
-        },
-      },
-      { $skip: (page - 1) * limit },
-      { $limit: limit },
-    ];
-
-    const getproduct = await products.aggregate(aggregationPipeline);
-    const perPageArray = getproduct.length;
-    const endResult = perPageArray * page;
-    const startResult =
-      getproduct.length === 0 ? 0 : (page - 1) * getproduct.length + 1;
-
-    const response = {
-      products: getproduct,
-      pagination: {
-        page: page,
-        limit: limit,
-        endResult: endResult,
-        startResult: startResult,
-        totalPages: Math.ceil(getproducts.length / limit),
-        totalResults: getproducts.length,
-      },
-    };
-    return res.status(200).send(response);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send(error);
-  }
-});
-
-export const ALL_GET_PRODUCT = expressAsyncHandler(async (req, res) => {
-  try {
-    const getTotalProducts = await products.aggregate([
-      {
-        $project: {
-          _id: 1,
-        },
-      },
-    ]);
-    return res.status(200).send(getTotalProducts);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send(error);
   }
 });

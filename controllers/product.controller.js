@@ -10,7 +10,6 @@ import {
 import fs from "fs";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import users from "../models/user.model.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,12 +32,16 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       items,
       keywords,
       product,
+      platform,
+      deliveryCharge,
     } = req.body;
 
-    const productIds = product.map((item) => ({
-      value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
-      label: item.label,
-    }));
+    const productIds = Array.isArray(product)
+      ? product.map((item) => ({
+          value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
+          label: item.label,
+        }))
+      : []; // Default to an empty array if `product` is not an array
 
     const { path } = req.file;
     const imageUrl = await uploadImageToCloudinary(path);
@@ -76,6 +79,8 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       items,
       keywords,
       product: productIds,
+      platform,
+      deliveryCharge,
     });
     // Save the new product to the database
     const savedProduct = await newProduct.save();
