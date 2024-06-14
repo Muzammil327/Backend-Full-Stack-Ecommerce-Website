@@ -16,7 +16,7 @@ const productsSchema = new Schema({
   },
   category: {
     type: String,
-    enum: ["men", "women", "children"],
+    enum: ["men", "women", "electronics"],
     lowercase: true,
     // required: [true, "Enter your Product Catgeory."],
   },
@@ -35,7 +35,9 @@ const productsSchema = new Schema({
   items: {
     type: String,
     // required: [true, "Enter your Product Sub Catgeory."],
-    // enum: ["clothing", "accessories"],
+    enum: [
+      "airpods", 
+    ],
     lowercase: true,
   },
   price: {

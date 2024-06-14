@@ -8,8 +8,13 @@ import user from "./routes/user.route.js";
 import address from "./routes/address.route.js";
 
 import connectDB from "./utils/dbConn.js";
-import express from 'express'
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const port = 5000;
 
 connectDB();
@@ -19,7 +24,8 @@ app.get("/", (req, res) => {
 });
 
 
-app.use("/uploadSliderImage", express.static("uploadSliderImage"));
+// app.use("/uploadSliderImage", express.static("uploadSliderImage"));
+app.use('/uploadSliderImage', express.static(path.join(__dirname, 'uploadSliderImage')));
 
 app.use("/api/v1/product", product);
 app.use("/api/v1/cart", cart);
