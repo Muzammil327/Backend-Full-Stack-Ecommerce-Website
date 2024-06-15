@@ -136,3 +136,18 @@ export const getOrdersByStatus = expressAsyncHandler(async (req, res) => {
       .json({ error: "An error occurred while fetching orders by status" });
   }
 });
+
+export const Delete_Order = expressAsyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const deletedPendingOrder = await Orders.findByIdAndDelete({
+      _id: orderId,
+    });
+    res.status(200).json(deletedPendingOrder);
+  } catch (error) {
+    console.error("Error handling file upload:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while handling file upload" });
+  }
+});
