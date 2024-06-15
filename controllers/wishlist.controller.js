@@ -70,6 +70,7 @@ export const Get_WishList_USER = expressAsyncHandler(async (req, res) => {
           "product_Detail.price": 1,
           "product_Detail.name": 1,
           "product_Detail.slug": 1,
+          "product_Detail.discountprice": 1,
         },
       },
     ]);

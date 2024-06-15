@@ -56,6 +56,8 @@ export const Get_Cart_User = expressAsyncHandler(async (req, res) => {
           "product_Detail.image": 1,
           "product_Detail.price": 1,
           "product_Detail.name": 1,
+          "product_Detail.discountprice": 1,
+          "product_Detail.deliveryCharge": 1,
         },
       },
     ]);

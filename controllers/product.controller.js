@@ -202,6 +202,7 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
 
   const { path } = req.file;
   const imageUrl = await uploadImageToCloudinary(path);
+
   fs.unlink(path, (err) => {
     if (err) {
       console.error("Error deleting file:", err);
@@ -210,10 +211,13 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
     }
   });
 
-  const productIds = product.map((item) => ({
-    value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
-    label: item.label,
-  }));
+  const productIds = Array.isArray(product)
+    ? product.map((item) => ({
+        value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
+        label: item.label,
+      }))
+    : []; // Default to an empty array if `product` is not an array
+
   try {
     const savedProduct = await products.findByIdAndUpdate(
       id,

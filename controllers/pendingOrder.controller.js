@@ -67,9 +67,6 @@ export const Delete_Pending_Order = expressAsyncHandler(async (req, res) => {
 export const Get_Pending_Order = expressAsyncHandler(async (req, res) => {
   const { user } = req.params;
   try {
-    // const pendingOrder = await POrder.findOne({ user: user }).populate(
-    //   "product"
-    // );
     const pendingOrder = await POrder.aggregate([
       {
         $match: {
@@ -94,6 +91,8 @@ export const Get_Pending_Order = expressAsyncHandler(async (req, res) => {
           "product_Detail.image": 1,
           "product_Detail.price": 1,
           "product_Detail.name": 1,
+          "product_Detail.slug": 1,
+          "product_Detail.discountprice": 1,
         },
       },
     ]);

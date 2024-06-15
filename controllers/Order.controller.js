@@ -28,6 +28,7 @@ export const GET_STATS_Order = expressAsyncHandler(async (req, res) => {
           "product.price": 1,
           "product.name": 1,
           "product.slug": 1,
+          "product.discountprice": 1,
         },
       },
     ]);
@@ -86,11 +87,9 @@ export const Get_ORDER_User = expressAsyncHandler(async (req, res) => {
       {
         $project: {
           _id: 1,
-          quantity: 1,
           totalPrice: 1,
           status: 1,
           "product.image": 1,
-          "product.price": 1,
           "product.name": 1,
         },
       },
