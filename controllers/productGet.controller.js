@@ -132,6 +132,7 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
           "product_details.image": 1, // Include the related product_detailss in the result
           "product_details.slug": 1, // Include the related product_detailss in the result
           "product_details.price": 1, // Include the related product_detailss in the result
+          "product_details.discountprice": 1, // Include the related product_detailss in the result
           "product_details.category": 1, // Include the related products in the result
         },
       },

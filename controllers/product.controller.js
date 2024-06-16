@@ -190,15 +190,6 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
 
   const parsedProduct = JSON.parse(product);
 
-  console.log("parsedProduct:", parsedProduct);
-
-  // const productIds = Array.isArray(product)
-  //   ? product.map((item) => ({
-  //       value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
-  //       label: item.label,
-  //     }))
-  //   : []; // Default to an empty array if `product` is not an array
-
   const slug = slugify(name, {
     replacement: "-",
     remove: undefined,
@@ -245,7 +236,6 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
       },
       { new: true }
     );
-    // console.log("savedProduct:", savedProduct);
 
     res.status(200).json(savedProduct);
   } catch (error) {
