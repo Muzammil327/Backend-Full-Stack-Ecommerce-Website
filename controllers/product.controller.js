@@ -31,17 +31,11 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       top,
       items,
       keywords,
-      product,
       platform,
+      product,
       deliveryCharge,
     } = req.body;
-
-    const productIds = Array.isArray(product)
-      ? product.map((item) => ({
-          value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
-          label: item.label,
-        }))
-      : []; // Default to an empty array if `product` is not an array
+    const parsedProducts = product.map((product) => JSON.parse(product));
 
     const { path } = req.file;
     const imageUrl = await uploadImageToCloudinary(path);
@@ -61,6 +55,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       locale: "vi", // language code of the locale to use
       trim: true, // trim leading and trailing replacement chars, defaults to `true`
     });
+
     const newProduct = new products({
       name,
       description,
@@ -78,13 +73,12 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       top,
       items,
       keywords,
-      product: productIds,
+      product: parsedProducts,
       platform,
       deliveryCharge,
     });
     // Save the new product to the database
     const savedProduct = await newProduct.save();
-
     // Send the saved product as a response
     res.status(200).json(savedProduct);
   } catch (error) {
@@ -184,12 +178,26 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
     status,
     freeDelivery,
     bestPrice,
+    deliveryCharge,
+    platform,
     feature,
     top,
     items,
     keywords,
     product,
   } = req.body;
+  console.log("product:", product);
+
+  const parsedProduct = JSON.parse(product);
+
+  console.log("parsedProduct:", parsedProduct);
+
+  // const productIds = Array.isArray(product)
+  //   ? product.map((item) => ({
+  //       value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
+  //       label: item.label,
+  //     }))
+  //   : []; // Default to an empty array if `product` is not an array
 
   const slug = slugify(name, {
     replacement: "-",
@@ -211,13 +219,6 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
     }
   });
 
-  const productIds = Array.isArray(product)
-    ? product.map((item) => ({
-        value: new mongoose.Types.ObjectId(item.value), // Assuming your Product model uses '_id' field for ID
-        label: item.label,
-      }))
-    : []; // Default to an empty array if `product` is not an array
-
   try {
     const savedProduct = await products.findByIdAndUpdate(
       id,
@@ -233,15 +234,19 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
         quantity,
         status,
         freeDelivery,
+        deliveryCharge,
+        platform,
         bestPrice,
         feature,
         top,
         items,
         keywords,
-        product: productIds,
+        product: parsedProduct,
       },
       { new: true }
     );
+    // console.log("savedProduct:", savedProduct);
+
     res.status(200).json(savedProduct);
   } catch (error) {
     console.error("Error handling file upload:", error);

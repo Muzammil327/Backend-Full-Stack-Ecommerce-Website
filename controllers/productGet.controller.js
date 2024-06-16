@@ -107,9 +107,9 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
       {
         $lookup: {
           from: "products", // Change this to the correct collection name if it's different
-          localField: "productId",
+          localField: "product.value",
           foreignField: "_id",
-          as: "relatedProducts", // Name of the field to store the related products
+          as: "product_details", // Name of the field to store the related products
         },
       },
       {
@@ -127,16 +127,17 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
           slider: 1,
           like: 1,
           dislike: 1,
-          "relatedProducts._id": 1, // Include the related products in the result
-          "relatedProducts.name": 1, // Include the related products in the result
-          "relatedProducts.image": 1, // Include the related products in the result
-          "relatedProducts.slug": 1, // Include the related products in the result
-          "relatedProducts.price": 1, // Include the related products in the result
-          "relatedProducts.category": 1, // Include the related products in the result
+          "product_details._id": 1, // Include the related product_detailss in the result
+          "product_details.name": 1, // Include the related product_detailss in the result
+          "product_details.image": 1, // Include the related product_detailss in the result
+          "product_details.slug": 1, // Include the related product_detailss in the result
+          "product_details.price": 1, // Include the related product_detailss in the result
+          "product_details.category": 1, // Include the related products in the result
         },
       },
     ]);
     const singleProduct = getProduct[0];
+    console.log(singleProduct);
     if (singleProduct) {
       return res.status(200).json(singleProduct);
     } else {
@@ -177,6 +178,8 @@ export const GET_SINGLE_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
           bestPrice: 1,
           feature: 1,
           top: 1,
+          deliveryCharge: 1,
+          platform: 1,
           product: {
             $map: {
               input: "$product",

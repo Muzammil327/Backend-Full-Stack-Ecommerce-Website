@@ -13,10 +13,6 @@ export const uploadImageToCloudinary = async (file) => {
     // Upload the image to Cloudinary
     const result = await cloudinary.uploader.upload(file, {
       folder: "Banner",
-      public_id: originalName, // Set the public_id to the original filename
-      resource_type: "image",
-      use_filename: true,
-      unique_filename: false,
       maxFileSize: 1 * 1024 * 1024, // 1MB
     });
 
