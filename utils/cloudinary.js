@@ -1,5 +1,6 @@
 import cloudinary from "cloudinary";
 import dotenv from "dotenv";
+import fs from "fs/promises";
 dotenv.config();
 
 cloudinary.config({
@@ -15,6 +16,7 @@ export const uploadImageToCloudinary = async (file) => {
       folder: "Banner",
       maxFileSize: 1 * 1024 * 1024, // 1MB
     });
+    await fs.unlink(file);
 
     return result.secure_url;
   } catch (error) {

@@ -181,6 +181,7 @@ export const GET_SINGLE_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
           top: 1,
           deliveryCharge: 1,
           platform: 1,
+          slider: 1,
           product: {
             $map: {
               input: "$product",
