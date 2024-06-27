@@ -1,11 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
-const productsSchema = new Schema({
+const productSchema = new Schema({
   name: {
     type: String,
     required: [true, "Enter your Product Name."],
   },
-  description: {
+  Sdescription: {
+    type: String,
+    required: true,
+  },
+  Ldescription: {
     type: String,
     required: true,
   },
@@ -49,7 +53,6 @@ const productsSchema = new Schema({
     type: Number,
     required: [true, "Enter your Product Price."],
   },
-  color: { type: String },
   image: {
     type: String,
     required: [true, "Enter your Product Image."],
@@ -82,24 +85,31 @@ const productsSchema = new Schema({
     default: false,
     // select: false,
   },
+  return: {
+    type: Boolean,
+    default: false,
+    // select: false,
+  },
   top: {
     type: Boolean,
     default: false,
     // select: false,
   },
-  product: [
+  productId: [
     {
-      value: { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
+      value: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
       label: {
         type: String,
       },
     },
   ],
-  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
-  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
-  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reviews" }],
+  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
 });
-const Products =
-  mongoose.models.Products || mongoose.model("Products", productsSchema);
+const product =
+  mongoose.models.product || mongoose.model("product", productSchema);
 
-export default Products;
+export default product;
+// name, description, slug, category, subCategory, platform, items, price,
+// image, keywords, slider, status, freeDelivery, bestPrice, feature, top,
+// productId, like, dislike

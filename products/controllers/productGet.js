@@ -1,25 +1,7 @@
-import mongoose from "mongoose";
-import products from "../models/product.model.js";
+import products from "../../products/model/product.model.js";
 import expressAsyncHandler from "express-async-handler";
 
-export const GET_PRODUCT_STATS = expressAsyncHandler(async (req, res) => {
-  try {
-    const getproducts = await products.aggregate([
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-        },
-      },
-    ]);
-    return res.status(200).send(getproducts);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send(error);
-  }
-});
-
-export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
+export const GET_PRODUCT_Card = expressAsyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 6;
   const subCategory = req.query.subCatgeory;
@@ -32,17 +14,25 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
   const highPrice = parseInt(req.query.highPrice);
 
   const getproducts = await products.find();
+  const addAmount = 1250;
+  const discountAmount = 1000;
   try {
     let aggregationPipeline = [
+      {
+        $addFields: {
+          adjustedPrice: {
+            $subtract: [{ $add: ["$price", addAmount] }, discountAmount],
+          }, // Adjusted price
+        },
+      },
       {
         $project: {
           _id: 1,
           name: 1,
           slug: 1,
           image: 1,
-          price: 1,
+          price: "$adjustedPrice", // Using the adjusted price
           category: 1,
-          discountprice: 1,
         },
       },
       { $skip: (page - 1) * limit },
@@ -81,11 +71,8 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
     const response = {
       products: getproduct,
       pagination: {
-        page: page,
-        limit: limit,
         endResult: endResult,
         startResult: startResult,
-        totalPages: Math.ceil(getproducts.length / limit),
         totalResults: getproducts.length,
       },
     };
@@ -96,7 +83,7 @@ export const GET_PRODUCT = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
+export const GET_DETAIL_PRODUCT = expressAsyncHandler(async (req, res) => {
   const { slug } = req.params;
 
   try {
@@ -123,7 +110,6 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
           subCategory: 1,
           items: 1,
           price: 1,
-          discountprice: 1,
           slider: 1,
           like: 1,
           dislike: 1,
@@ -132,13 +118,11 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
           "product_details.image": 1, // Include the related product_detailss in the result
           "product_details.slug": 1, // Include the related product_detailss in the result
           "product_details.price": 1, // Include the related product_detailss in the result
-          "product_details.discountprice": 1, // Include the related product_detailss in the result
           "product_details.category": 1, // Include the related products in the result
         },
       },
     ]);
     const singleProduct = getProduct[0];
-
     if (singleProduct) {
       return res.status(200).json(singleProduct);
     } else {
@@ -150,7 +134,7 @@ export const GET_SINGLE_PRODUCT = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export const GET_SINGLE_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
+export const GET_ADMIN_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
     // const getProduct = await products.findById(id);
@@ -170,8 +154,6 @@ export const GET_SINGLE_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
           subCategory: 1,
           items: 1,
           price: 1,
-          discountprice: 1,
-          quantity: 1,
           image: 1,
           keywords: 1,
           status: 1,

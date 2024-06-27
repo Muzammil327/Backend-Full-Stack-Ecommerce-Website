@@ -54,8 +54,8 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       platform,
       product,
       deliveryCharge,
+      value,
     } = req.body;
-
     let imageSlider = []; // Declare the outer array
 
     if (slider) {
@@ -132,6 +132,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       product: parsedProducts,
       platform,
       deliveryCharge,
+      value,
     });
 
     const savedProduct = await newProduct.save();
@@ -256,7 +257,6 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
       },
       { new: true }
     );
-    console.log(savedProduct);
     res.status(200).json(savedProduct);
   } catch (error) {
     console.error("Error handling file upload:", error);
@@ -363,7 +363,6 @@ export const Put_PRODUCT_Like = expressAsyncHandler(async (req, res) => {
   try {
     let updatedProduct;
     const userIndex = product.like.indexOf(user);
-    console.log("userIndex Like:", userIndex);
 
     if (userIndex === -1) {
       updatedProduct = await products.findByIdAndUpdate(
@@ -412,8 +411,6 @@ export const Put_PRODUCT_DisLike = expressAsyncHandler(async (req, res) => {
     let updatedProduct;
     const userIndexLike = product.like.indexOf(user);
     const userIndex = product.dislike.indexOf(user);
-    console.log("userIndex Dislike:", userIndex);
-    console.log("userIndexLike Dislike:", userIndexLike);
 
     if (userIndex === -1) {
       updatedProduct = await products.findByIdAndUpdate(

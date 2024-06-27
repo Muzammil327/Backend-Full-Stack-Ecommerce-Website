@@ -9,6 +9,7 @@ const reviewsSchema = new mongoose.Schema({
   },
   rating: { type: Number, required: true },
   text: { type: String },
+  date: { type: Date, default: Date.now },
   like: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
   dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
   createdAt: { type: Date, default: Date.now },
