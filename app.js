@@ -9,6 +9,7 @@ dotenv.config();
 
 const app = express();
 const corsURL = [
+  "https://full-stack-ecommerce-website-five.vercel.app",
   process.env.corsURL_1,
   process.env.corsURL_2,
   process.env.corsURL_3,
