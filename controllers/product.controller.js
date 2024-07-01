@@ -1,5 +1,5 @@
 import slugify from "slugify";
-import products from "../models/product.model.js";
+import Products from "../models/product.model.js";
 import expressAsyncHandler from "express-async-handler";
 import mongoose from "mongoose";
 import path from "path";
@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
-  // Check if file(s) were uploaded
+  // --------------- Check file(s) uploaded ---------------
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files uploaded");
   }
@@ -23,49 +23,116 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
   try {
     const { image, slider } = req.files;
 
-    // Handle single file upload 'image'
+    // --------------- Handle single file ---------------
     if (!image) {
-      return res.status(400).send("Image file is required");
+      res.json({
+        status: 400,
+        message: "Product Image not successfully upload.",
+      });
     }
 
-    const imageUrl = await uploadImageToCloudinary(image[0].path); // Assuming uploadImageToCloudinary uploads single image
+    const imageUrl = await uploadImageToCloudinary(image[0].path);
 
-    // Handle multiple file upload 'slider'
+    // --------------- Handle multiple file upload ---------------
     if (!slider) {
-      return res.status(400).send("Slider images are required");
+      res.json({
+        status: 400,
+        message: "Slider Image not successfully upload.",
+      });
     }
 
-    // Extract product details from the request body
+    // --------------- Extract product details from the request body ---------------
     const {
       name,
-      description,
+      Ldescription,
+      Sdescription,
       category,
       subCategory,
-      quantity,
-      discountprice,
+      platform,
+      items,
       price,
+      keywords,
       status,
       freeDelivery,
       bestPrice,
       feature,
       top,
-      items,
-      keywords,
-      platform,
-      product,
-      deliveryCharge,
-      value,
+      productId,
     } = req.body;
-    let imageSlider = []; // Declare the outer array
 
+    // --------------- Validation request body ---------------
+    if (!name) {
+      res.json({
+        status: 400,
+        message: "Product Image is Required.",
+      });
+    }
+    if (!Ldescription) {
+      res.json({
+        status: 400,
+        message: "Product Long Description is Required.",
+      });
+    }
+    if (!Sdescription) {
+      res.json({
+        status: 400,
+        message: "Product Short Description is Required.",
+      });
+    }
+    if (!category) {
+      res.json({
+        status: 400,
+        message: "Product Category is Required.",
+      });
+    }
+    if (!subCategory) {
+      res.json({
+        status: 400,
+        message: "Product Sub Category is Required.",
+      });
+    }
+    if (!platform) {
+      res.json({
+        status: 400,
+        message: "Product Platform is Required.",
+      });
+    }
+    if (!items) {
+      res.json({
+        status: 400,
+        message: "Product Items is Required.",
+      });
+    }
+    if (!price) {
+      res.json({
+        status: 400,
+        message: "Product Price is Required.",
+      });
+    }
+    if (!keywords) {
+      res.json({
+        status: 400,
+        message: "Product Keywords is Required.",
+      });
+    }
+    if (!status) {
+      res.json({
+        status: 400,
+        message: "Product Status is Required.",
+      });
+    }
+
+    //  --------------- Declare the outer array ---------------
+    let imageSlider = [];
+    let parsedProducts = [];
+
+    // --------------- Handle Slider ---------------
     if (slider) {
       if (Array.isArray(slider)) {
         try {
           // Map over the array of files and upload each one asynchronously
           imageSlider = await Promise.all(
-            // Remove 'const' here
             slider.map(async (file) => {
-              // Assuming file.path is the correct property for the file's path
               const uploadedImagePath = await uploadImageToCloudinary(
                 file.path
               );
@@ -73,16 +140,15 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
             })
           );
         } catch (error) {
-          console.error("Error uploading images:", error);
-          // Handle or log the error appropriately
+          console.error("Error uploading slider image:", error);
         }
       }
     }
 
-    let parsedProducts = [];
-    if (product) {
-      if (Array.isArray(product)) {
-        parsedProducts = product.map((p) => {
+    // --------------- Handle Product Id ---------------
+    if (productId) {
+      if (Array.isArray(productId)) {
+        parsedProducts = productId.map((p) => {
           try {
             return typeof p === "string" ? JSON.parse(p) : p;
           } catch (error) {
@@ -93,7 +159,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       } else {
         try {
           parsedProducts = [
-            typeof product === "string" ? JSON.parse(product) : product,
+            typeof productId === "string" ? JSON.parse(productId) : productId,
           ];
         } catch (error) {
           console.error("Error parsing product item:", error);
@@ -102,6 +168,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       }
     }
 
+    // --------------- Handle Slug ---------------
     const slug = slugify(name, {
       replacement: "-", // replace spaces with replacement character, defaults to `-`
       remove: undefined, // remove characters that match regex, defaults to `undefined`
@@ -111,34 +178,37 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       trim: true, // trim leading and trailing replacement chars, defaults to `true`
     });
 
-    const newProduct = new products({
+    // --------------- Handle Product Id ---------------
+    const Gross_Price = price;
+
+    const newProduct = new Products({
       name,
-      description,
+      Ldescription: Ldescription,
+      Sdescription: Sdescription,
       slug,
-      image: imageUrl, // Store Cloudinary image URL in the database
       category,
       subCategory,
-      discountprice,
-      price,
-      quantity,
+      platform,
+      items,
+      price: Gross_Price,
+      image: imageUrl, // Store Cloudinary image URL in the database
+      keywords,
+      slider: imageSlider, // Store Cloudinary image URL in the database
       status,
       freeDelivery,
-      slider: imageSlider,
       bestPrice,
       feature,
       top,
-      items,
-      keywords,
-      product: parsedProducts,
-      platform,
-      deliveryCharge,
-      value,
+      productId: parsedProducts,
     });
 
-    const savedProduct = await newProduct.save();
+    await newProduct.save();
 
     // Send response after saving the product
-    res.status(200).json(savedProduct);
+    res.json({
+      status: 200,
+      message: "Product saved successfully",
+    });
   } catch (error) {
     console.error("Error saving product to database:", error);
     // Handle database save error, rollback, etc.
@@ -158,11 +228,11 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
 
     const {
       name,
-      description,
+      Sdescription,
+      Ldescription,
       category,
       subCategory,
       quantity,
-      discountprice,
       price,
       status,
       freeDelivery,
@@ -173,10 +243,9 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
       keywords,
       platform,
       product,
-      deliveryCharge,
     } = req.body;
 
-    const existingProduct = await products.findById(id);
+    const existingProduct = await Products.findById(id);
     if (!existingProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -231,16 +300,16 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
       trim: true, // trim leading and trailing replacement chars, defaults to `true`
     });
 
-    const savedProduct = await products.findByIdAndUpdate(
+    const savedProduct = await Products.findByIdAndUpdate(
       id,
       {
         name,
-        description,
+        Sdescription,
+        Ldescription,
         slug,
         image: imageUrl || existingProduct.image,
         category,
         subCategory,
-        discountprice,
         price,
         quantity,
         status,
@@ -253,7 +322,6 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
         keywords,
         product: parsedProducts,
         platform,
-        deliveryCharge,
       },
       { new: true }
     );
@@ -271,42 +339,42 @@ export const DELETE_PRODUCT = expressAsyncHandler(async (req, res) => {
   const url = req.query.publicId;
   const slider = req.query.slider;
 
-  const parts = url.split("/");
+  if (!url || !slider) {
+    return res
+      .status(400)
+      .json({ error: "Public ID and slider information are required" });
+  }
 
-  const publicIdWithExtension = parts[parts.length - 1];
-  const parts2 = publicIdWithExtension.split(".");
-
-  const publicId = parts2[0];
   try {
     // Find the product by ID
-    const product = await products.findById(id);
+    const product = await Products.findById(id);
 
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // Check if product.slider is defined and not null
-    if (Array.isArray(product.slider)) {
-      // Delete images from the file system
-      product.slider.forEach((imagePath) => {
-        try {
-          // Construct the absolute path to the image
-          const absolutePath = path.resolve(
-            __dirname,
-            "../uploadSliderImage",
-            imagePath
-          );
-          // Delete the image file
-          fs.unlinkSync(absolutePath);
-        } catch (error) {
-          console.error(`Error deleting image: ${imagePath}`, error);
-        }
-      });
+    if (url) {
+      const parts = url.split("/");
+      const publicIdWithExtension = parts[parts.length - 1];
+      const parts2 = publicIdWithExtension.split(".");
+      const publicIdUrl = parts2[0];
+      await deleteImageFromCloudinary(publicIdUrl);
     }
 
-    await products.findByIdAndDelete(id);
+    // Delete each slider image if provided
+    if (slider) {
+      const sliderUrls = slider.split(",");
+      for (const sliderUrl of sliderUrls) {
+        const parts = sliderUrl.trim().split("/");
+        const publicIdWithExtension = parts[parts.length - 1];
+        const parts2 = publicIdWithExtension.split(".");
+        const publicIdUrl = parts2[0];
+        await deleteImageFromCloudinary(publicIdUrl);
+      }
+    }
 
-    await deleteImageFromCloudinary(publicId);
+    await Products.findByIdAndDelete(id);
+
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error handling file upload:", error);
@@ -327,15 +395,15 @@ export const DELETE_PRODUCT_IMAGE = expressAsyncHandler(async (req, res) => {
   const publicId = parts2[0];
 
   try {
+    const product = await Products.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
     const deletedProduct = await deleteImageFromCloudinary(publicId);
     if (!deletedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    const product = await products.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found." });
-    }
     // Remove the URL from the product's images object
     if (product.images === url) {
       product.images = "";
@@ -351,101 +419,6 @@ export const DELETE_PRODUCT_IMAGE = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export const Put_PRODUCT_Like = expressAsyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { user } = req.body;
-
-  const product = await products.findById(id);
-  if (!product) {
-    return res.status(404).json({ message: "Product not found." });
-  }
-
-  try {
-    let updatedProduct;
-    const userIndex = product.like.indexOf(user);
-
-    if (userIndex === -1) {
-      updatedProduct = await products.findByIdAndUpdate(
-        id,
-        {
-          $push: { like: new mongoose.Types.ObjectId(user) },
-          $pull: { dislike: new mongoose.Types.ObjectId(user) },
-        },
-        { new: true }
-      );
-    } else {
-      updatedProduct = await products.findByIdAndUpdate(
-        id,
-        {
-          $pull: { like: new mongoose.Types.ObjectId(user) },
-        },
-        { new: true }
-      );
-    }
-
-    res.status(200).json({
-      message:
-        userIndex === -1
-          ? "Product liked successfully"
-          : "Product unliked successfully",
-      product: updatedProduct,
-    });
-  } catch (error) {
-    console.error("Error updating product like:", error);
-    res.status(500).json({
-      error: "An error occurred while updating product like",
-    });
-  }
-});
-
-export const Put_PRODUCT_DisLike = expressAsyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { user } = req.body;
-
-  const product = await products.findById(id);
-  if (!product) {
-    return res.status(404).json({ message: "Product not found." });
-  }
-
-  try {
-    let updatedProduct;
-    const userIndexLike = product.like.indexOf(user);
-    const userIndex = product.dislike.indexOf(user);
-
-    if (userIndex === -1) {
-      updatedProduct = await products.findByIdAndUpdate(
-        id,
-        {
-          $push: { dislike: new mongoose.Types.ObjectId(user) },
-          $pull: { like: new mongoose.Types.ObjectId(user) },
-        },
-        { new: true }
-      );
-    } else {
-      updatedProduct = await products.findByIdAndUpdate(
-        id,
-        {
-          $pull: { dislike: new mongoose.Types.ObjectId(user) },
-        },
-        { new: true }
-      );
-    }
-
-    res.status(200).json({
-      message:
-        userIndex === -1
-          ? "Product liked successfully"
-          : "Product unliked successfully",
-      product: updatedProduct,
-    });
-  } catch (error) {
-    console.error("Error updating product like:", error);
-    res.status(500).json({
-      error: "An error occurred while updating product like",
-    });
-  }
-});
-
 export const Delete_SLIDER_IMAGE = expressAsyncHandler(async (req, res) => {
   const url = req.query.publicId;
   const id = req.query.id;
@@ -457,20 +430,20 @@ export const Delete_SLIDER_IMAGE = expressAsyncHandler(async (req, res) => {
   const publicId = parts2[0];
 
   try {
+    const product = await Products.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
     const deletedProduct = await deleteImageFromCloudinary(publicId);
     if (!deletedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    const product = await products.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found." });
-    }
     // Remove the URL from the product's slider array
     product.slider = product.slider.filter((imageUrl) => imageUrl !== url);
 
     await product.save();
-    // await product.save();
 
     res.status(200).json(deletedProduct);
   } catch (error) {
@@ -478,5 +451,61 @@ export const Delete_SLIDER_IMAGE = expressAsyncHandler(async (req, res) => {
     res
       .status(500)
       .json({ error: "An error occurred while handling file upload" });
+  }
+});
+
+export const GET_ADMIN_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    // const getProduct = await products.findById(id);
+    const getProduct = await Products.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: 1,
+          Sdescription: 1,
+          Ldescription: 1,
+          slug: 1,
+          category: 1,
+          subCategory: 1,
+          items: 1,
+          price: 1,
+          image: 1,
+          keywords: 1,
+          status: 1,
+          freeDelivery: 1,
+          bestPrice: 1,
+          feature: 1,
+          top: 1,
+          deliveryCharge: 1,
+          platform: 1,
+          slider: 1,
+          productId: {
+            $map: {
+              input: "$productId",
+              as: "item",
+              in: {
+                label: "$$item.label",
+                value: "$$item.value",
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    if (getProduct) {
+      return res.status(200).json(getProduct[0]);
+    } else {
+      return res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });

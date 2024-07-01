@@ -5,7 +5,11 @@ const productsSchema = new Schema({
     type: String,
     required: [true, "Enter your Product Name."],
   },
-  description: {
+  Sdescription: {
+    type: String,
+    required: true,
+  },
+  Ldescription: {
     type: String,
     required: true,
   },
@@ -49,7 +53,6 @@ const productsSchema = new Schema({
     type: Number,
     required: [true, "Enter your Product Price."],
   },
-  color: { type: String },
   image: {
     type: String,
     required: [true, "Enter your Product Image."],
@@ -70,34 +73,33 @@ const productsSchema = new Schema({
   freeDelivery: {
     type: Boolean,
     default: false,
-    // select: false,
+    select: false,
   },
   bestPrice: {
     type: Boolean,
     default: false,
-    // select: false,
+    select: false,
   },
   feature: {
     type: Boolean,
     default: false,
-    // select: false,
+    select: false,
   },
   top: {
     type: Boolean,
     default: false,
-    // select: false,
+    select: false,
   },
-  product: [
+  productId: [
     {
-      value: { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
+      value: { type: mongoose.Schema.Types.ObjectId, ref: "products" },
       label: {
         type: String,
       },
     },
   ],
-  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
-  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
-  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reviews" }],
+  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+  dislike: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
 });
 const Products =
   mongoose.models.Products || mongoose.model("Products", productsSchema);
