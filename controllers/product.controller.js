@@ -320,7 +320,7 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
         top,
         items,
         keywords,
-        product: parsedProducts,
+        productId: parsedProducts,
         platform,
       },
       { new: true }
