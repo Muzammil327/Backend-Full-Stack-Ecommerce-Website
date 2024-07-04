@@ -179,6 +179,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
     });
 
     // --------------- Handle Product Id ---------------
+
     const Gross_Price = price;
 
     const newProduct = new Products({
@@ -457,7 +458,6 @@ export const Delete_SLIDER_IMAGE = expressAsyncHandler(async (req, res) => {
 export const GET_ADMIN_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    // const getProduct = await products.findById(id);
     const getProduct = await Products.aggregate([
       {
         $match: {

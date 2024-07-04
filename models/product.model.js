@@ -37,6 +37,7 @@ const productsSchema = new Schema({
       "markaz",
       "hhcdropshipping",
       "sadadropship",
+      "shoes",
       // "Shoes 03432229012",
     ],
     lowercase: true,
