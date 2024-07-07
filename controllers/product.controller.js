@@ -58,6 +58,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       feature,
       top,
       productId,
+      size,
     } = req.body;
 
     // --------------- Validation request body ---------------
@@ -191,6 +192,7 @@ export const Post_PRODUCT = expressAsyncHandler(async (req, res) => {
       subCategory,
       platform,
       items,
+      size,
       price: Gross_Price,
       image: imageUrl, // Store Cloudinary image URL in the database
       keywords,
@@ -242,6 +244,7 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
       top,
       items,
       keywords,
+      size,
       platform,
       product,
     } = req.body;
@@ -314,6 +317,7 @@ export const Put_PRODUCT = expressAsyncHandler(async (req, res) => {
         price,
         quantity,
         status,
+        size,
         freeDelivery,
         slider: mergedSlider,
         bestPrice,
@@ -482,6 +486,7 @@ export const GET_ADMIN_PRODUCTBYID = expressAsyncHandler(async (req, res) => {
           bestPrice: 1,
           feature: 1,
           top: 1,
+          size: 1,
           deliveryCharge: 1,
           platform: 1,
           slider: 1,

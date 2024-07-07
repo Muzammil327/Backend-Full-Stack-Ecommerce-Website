@@ -8,9 +8,12 @@ const cartsSchema = new mongoose.Schema({
   },
   user: { type: Schema.Types.ObjectId, ref: "Users" },
   qty: {
-    type: Number,
+    type: String,
     min: 1,
     default: 1,
+  },
+  size: {
+    type: String,
   },
   createdAt: {
     type: Date,
@@ -21,4 +24,3 @@ const cartsSchema = new mongoose.Schema({
 const Carts = mongoose.models.Carts || mongoose.model("Carts", cartsSchema);
 
 export default Carts;
-// productId, userId, quantity

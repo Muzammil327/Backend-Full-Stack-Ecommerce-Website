@@ -62,6 +62,9 @@ const productsSchema = new Schema({
     type: [String],
     required: [true, "Enter your Keywords."],
   },
+  size: {
+    type: [String],
+  },
   slider: {
     type: [String],
     required: [true, "Enter your Slider Image."],

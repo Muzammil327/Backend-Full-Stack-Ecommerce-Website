@@ -17,6 +17,9 @@ const ordersSchema = new mongoose.Schema({
     min: 1,
     default: 1,
   },
+  size: {
+    type: String,
+  },
   status: {
     type: String,
     enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"],
